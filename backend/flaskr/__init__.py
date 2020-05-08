@@ -84,7 +84,7 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
-  @app.route('/questions/<int:question_id>', methods = ['DELETE'])
+  @app.route('/questions/<question_id>', methods = ['DELETE'])
   def delete_question(question_id):
     error = False
     try:
@@ -100,7 +100,8 @@ def create_app(test_config=None):
       abort(404)
     else:
       return jsonify({
-          'success': True
+          'success': True,
+          'message': 'Delete is completed'
       })
       
 
@@ -132,10 +133,11 @@ def create_app(test_config=None):
     finally:
       db.session.close()
     if error: 
-      abort(404)
+      abort(422)
     else:
       return jsonify({
-          'success': True
+          'success': True,
+          'message': 'Create is completed'
       })
   '''
   @TODO: 
@@ -174,7 +176,7 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
-  @app.route('/categories/<int:category_id>/questions')
+  @app.route('/categories/<category_id>/questions')
   def show_questions(category_id):
     questions = Question.query.filter_by(category = category_id).all()
     current_category = request.args.get('current_category')
@@ -202,14 +204,23 @@ def create_app(test_config=None):
   '''
   @app.route('/quizzes', methods = ['POST'])
   def create_quiz():
+    error = False
     data = request.data
     data_dictionary = json.loads(data)
-    questions = Question.query.filter_by(category = data_dictionary['quiz_category']['id']).order_by(func.random())
-    formatted_questions = [question.format() for question in questions]
-    return jsonify({
-        'question': formatted_questions[0],
-        'success': True
-    })
+    try:
+      questions = Question.query.filter_by(category = data_dictionary['quiz_category']['id']).order_by(func.random())
+      formatted_questions = [question.format() for question in questions]
+    except:
+      error = True
+      print(sys.exc_info())
+    if error:
+      abort(422)
+    else:
+      return jsonify({
+          'question': formatted_questions[0],
+          'success': True
+      })
+      
   '''
   @TODO: 
   Create error handlers for all expected errors 
@@ -227,7 +238,7 @@ def create_app(test_config=None):
     return jsonify({
         'success': False,
         'error': 422,
-        'message': "unprocessable"
+        'message': "Unprocessable"
     }), 422
   return app
 
