@@ -140,13 +140,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Not Found')
     
     def test_start_quiz(self):
-        res = self.client().post('/quizzes', json = {'quiz-category':{'id':'1'}})
+        res = self.client().post('/quizzes', json = {'quiz_category':{'id':'1'}})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['question'])
-        self.assertEqual(len(data['questions']), 1)
+        self.assertEqual(len(data['question']), 5)
     
     def test_422_if_quizz_can_have_the_category(self):
         res = self.client().post('/quizzes', json = {'quiz-category':{'id':'100000'}})

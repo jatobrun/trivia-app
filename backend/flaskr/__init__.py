@@ -70,13 +70,17 @@ def create_app(test_config=None):
       formatted_categories[category.id] = category.type
     questions = Question.query.filter()
     formatted_questions = [question.format() for question in questions]
-    return jsonify({
-        'success': True,
-        'questions': formatted_questions[start:end],
-        'total_questions': len(formatted_questions),
-        'categories': formatted_categories,
-        'current_category': current_category
-    })
+    final_questions = formatted_questions[start:end]
+    if len(final_questions) == 0:
+      abort(404)
+    else:
+      return jsonify({
+          'success': True,
+          'questions': formatted_questions[start:end],
+          'total_questions': len(formatted_questions),
+          'categories': formatted_categories,
+          'current_category': current_category
+      })
   '''
   @TODO: 
   Create an endpoint to DELETE question using a question ID. 
@@ -207,6 +211,7 @@ def create_app(test_config=None):
     error = False
     data = request.data
     data_dictionary = json.loads(data)
+    print(data_dictionary)
     try:
       questions = Question.query.filter_by(category = data_dictionary['quiz_category']['id']).order_by(func.random())
       formatted_questions = [question.format() for question in questions]

@@ -252,6 +252,9 @@ The API will return two error types when a request fail:
 ```
 {
     'success': True,
-    'question': {'question': 'what charge have the electron?', 'answer': 'Negative charge', 'category': '1', 'id': '23'},
+    'question': {'question': 'what charge have the electron?', 
+    'answer': 'Negative charge', 
+    'category': '1', 
+    'id': '23'},
 }    
 ```
